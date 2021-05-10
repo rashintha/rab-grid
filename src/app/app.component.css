@@ -71,13 +71,16 @@
     opacity: 0.8;
   }
 
+
+
   .content {
-    display: flex;
+    /* display: flex; */
     margin: 82px auto 32px;
-    padding: 0 16px;
+    /* padding: 0 16px;
     max-width: 960px;
-    flex-direction: column;
+    flex-direction: column; */
     align-items: center;
+    justify-content: center;
   }
 
   svg.material-icons {
