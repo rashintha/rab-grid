@@ -105,3 +105,27 @@ table.border-white > tbody > tr > td {
 table.border-white > tfoot > tr > th {
     border-color: #fff!important;
 }
+
+.total{
+    align-self: center;
+    position: absolute;
+    left: calc(15px + 0.75rem);
+}
+
+.show-count{
+    display: inline-block;
+    width: unset;
+}
+
+.pagination.pagination-default .page-item.active .page-link{
+    color: #000;
+    background-color: #dee2e6;
+    border-color: #dee2e6;
+}
+
+.pagination.pagination-default .page-item:not(.disabled):not(.active) .page-link{
+    color: #000;
+    cursor: pointer;
+    background-color: #fff;
+    border-color: #dee2e6;
+}

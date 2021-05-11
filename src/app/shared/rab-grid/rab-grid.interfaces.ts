@@ -1,4 +1,4 @@
-import { RABGridBorderColors, RABGridColorThemes, RABGridEditComponents } from "./rab-grid.enum";
+import { RABGridBorderColors, RABGridColorThemes, RABGridEditComponents, RABGridPaginationColorThemes } from "./rab-grid.enum";
 
 export interface RABGridConfig{
     /** Set true to enable responsiveness. Default: false */
@@ -41,6 +41,12 @@ interface RABGridPagination{
     enable?: boolean
     /** Set page size. Default: 10 */
     page_size?: number
+    /** Pagination Theme Configurations */
+    theme?: RABGridPaginationTheme
+}
+
+interface RABGridPaginationTheme{
+    color_theme?: RABGridPaginationColorThemes
 }
 
 interface RABGridPage{

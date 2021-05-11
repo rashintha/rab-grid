@@ -3,7 +3,7 @@ import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
 import * as XLSX from 'xlsx';
 import { saveAs } from 'file-saver';
-import { RABGridBorderColors, RABGridColorThemes, RABGridEditComponents, RABGridProperties } from './rab-grid.enum';
+import { RABGridBorderColors, RABGridColorThemes, RABGridEditComponents, RABGridPaginationColorThemes, RABGridProperties } from './rab-grid.enum';
 import { RABGridConfig } from './rab-grid.interfaces'
 
 @Component({
@@ -25,6 +25,14 @@ export class RabGridComponent implements OnInit {
     }
     
     this._data = value
+
+    if(this._data.length < 10){
+      if(this._data.length < 5){
+        this.custom_page_size = 0;
+      }else{
+        this.custom_page_size = 5;
+      }
+    }
 
     if(this.getProperty(RABGridProperties.PaginationEnable)){
       this.page_numbers = [];
@@ -61,6 +69,7 @@ export class RabGridComponent implements OnInit {
   rabGridEditComponents = RABGridEditComponents
   rabGridColorThemes = RABGridColorThemes
   rabGridBorderColors = RABGridBorderColors
+  rabGridPaginationColorThemes = RABGridPaginationColorThemes
 
   print_data: any = []
 
@@ -124,6 +133,10 @@ export class RabGridComponent implements OnInit {
       //Pagination
       case RABGridProperties.PaginationEnable: {
         return this.config.pagination?.enable ? true : false;
+      }
+
+      case RABGridProperties.PaginationThemeColorTheme: {
+        return this.config.pagination?.theme?.color_theme ? this.config.pagination.theme.color_theme : RABGridPaginationColorThemes.Default;
       }
 
       case RABGridProperties.PageSize: {

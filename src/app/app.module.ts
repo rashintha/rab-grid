@@ -8,6 +8,7 @@ import { HomeComponent } from './Components/home/home.component';
 import { Example01Component } from './Examples/example01/example01.component';
 import { RabGridComponent } from './shared/rab-grid/rab-grid.component';
 import { Example02Component } from './Examples/example02/example02.component';
+import { Example03Component } from './Examples/example03/example03.component';
 
 @NgModule({
   declarations: [
@@ -16,6 +17,7 @@ import { Example02Component } from './Examples/example02/example02.component';
     HomeComponent,
     Example01Component,
     Example02Component,
+    Example03Component,
   ],
   imports: [
     BrowserModule,
