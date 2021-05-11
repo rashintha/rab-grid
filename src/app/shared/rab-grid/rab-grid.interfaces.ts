@@ -1,10 +1,10 @@
-import { RABGridEditComponents } from "./rab-grid.enum";
+import { RABGridColorThemes, RABGridEditComponents } from "./rab-grid.enum";
 
 export interface RABGridConfig{
     /** Set true to enable responsiveness. Default: false */
     responsive?: boolean
-    /** Set true to enable table strips. Default: false */
-    stripped?: boolean
+    /** Theme configurations of the grid */
+    theme?: RABGridTheme
     /** Pagination configurations */
     pagination?: RABGridPagination
     /** Page configurations */
@@ -15,6 +15,15 @@ export interface RABGridConfig{
     data?: RABGridData
     /** Footer configurations */
     footer?: RABGridFooter
+}
+
+interface RABGridTheme{
+    /** Set true to enable table strips. Default: false */
+    striped?: boolean
+    /** Change color theme of the grid. */
+    color_theme?: RABGridColorThemes,
+    /** Set true to enable hoverable strips. Default: false */
+    hoverable?: boolean
 }
 
 interface RABGridPagination{

@@ -3,7 +3,7 @@ import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
 import * as XLSX from 'xlsx';
 import { saveAs } from 'file-saver';
-import { RABGridEditComponents, RABGridProperties } from './rab-grid.enum';
+import { RABGridColorThemes, RABGridEditComponents, RABGridProperties } from './rab-grid.enum';
 import { RABGridConfig } from './rab-grid.interfaces'
 
 @Component({
@@ -59,6 +59,7 @@ export class RabGridComponent implements OnInit {
   //Variables
   rabGridProperties = RABGridProperties
   rabGridEditComponents = RABGridEditComponents
+  rabGridColorThemes = RABGridColorThemes
 
   print_data: any = []
 
@@ -94,8 +95,17 @@ export class RabGridComponent implements OnInit {
         return this.config.responsive ? true : false;
       }
 
-      case RABGridProperties.Stripped: {
-        return this.config.stripped ? true : false;
+      //Theme
+      case RABGridProperties.ThemeStriped: {
+        return this.config.theme?.striped ? true : false;
+      }
+
+      case RABGridProperties.ThemeColorTheme: {
+        return this.config.theme?.color_theme ? this.config.theme?.color_theme : null;
+      }
+
+      case RABGridProperties.ThemeHoverable: {
+        return this.config.theme?.hoverable ? true : false;
       }
 
       //Pagination
@@ -104,10 +114,7 @@ export class RabGridComponent implements OnInit {
       }
 
       case RABGridProperties.PageSize: {
-        return this.download_mode ? this.data.length : this.config && 
-          this.config.pagination && 
-          this.config.pagination.page_size && 
-          this.config.pagination.page_size > 0 ? 
+        return this.download_mode ? this.data.length : this.config.pagination?.page_size && this.config.pagination.page_size > 0 ? 
             this.custom_page_size == this.config.pagination.page_size ? 
               this.config.pagination.page_size : this.custom_page_size == 0 ? 
                 this.getProperty(RABGridProperties.DataLength) ? 
@@ -121,13 +128,12 @@ export class RabGridComponent implements OnInit {
 
       //Page
       case RABGridProperties.PageEdit: {
-        return this.config && this.config.page && 
-          this.config.page.edit ? true : false;
+        return this.config.page?.edit ? true : false;
       }
 
       //Header
       case RABGridProperties.HeaderOrder: {
-        if(this.config && this.config.header && this.config.header.order && this.config.header.order.length > 0){
+        if(this.config.header?.order?.length && this.config.header.order.length > 0){
           return this.config.header.order;
         }else if(this.data.length){
           return Object.keys(this.data[0])
@@ -138,25 +144,20 @@ export class RabGridComponent implements OnInit {
 
       //Data
       case RABGridProperties.DataLength: {
-        return this.config && this.config.data && 
-          this.config.data.length && 
-          this.config.data.length > 0 ? this.config.data.length : 0;
+        return this.config.data?.length && this.config.data.length > 0 ? this.config.data.length : 0;
       }
 
       case RABGridProperties.DataTotalShow: {
-        return this.config && this.config.data && 
-          this.config.data.total == false ? false : true;
+        return this.config.data?.total == false ? false : true;
       }
 
       //Data -> Export
       case RABGridProperties.ExportEnable: {
-        return this.config && this.config.data && 
-          this.config.data.export && 
-          this.config.data.export.enable ? true : false;
+        return this.config.data?.export?.enable ? true : false;
       }
 
       case RABGridProperties.ExportTypes: {
-        if(this.config && this.config.data && this.config.data.export && this.config.data.export.types && this.config.data.export.types.length){
+        if(this.config.data?.export?.types && this.config.data.export.types.length){
           let return_arr: Array<Object> = [];
 
           this.config.data.export.types.forEach((type: string): void => {
@@ -205,58 +206,39 @@ export class RabGridComponent implements OnInit {
 
       //Data -> Columns
       case RABGridProperties.ColumnEdit: {
-        return this.config && this.config.data && 
-          this.config.data.columns && 
-          columnName && columnName !== '' &&
-          this.config.data.columns[columnName] && 
+        return this.config.data?.columns && columnName && columnName !== '' && this.config.data.columns[columnName] && 
           this.config.data.columns[columnName].edit != null ? this.config.data.columns[columnName].edit : true;
       }
 
       case RABGridProperties.ColumnSort: {
-        return this.config && this.config.data && 
-          this.config.data.columns && 
-          columnName && columnName !== '' &&
-          this.config.data.columns[columnName] && 
+        return this.config.data?.columns && columnName && columnName !== '' && this.config.data.columns[columnName] && 
           this.config.data.columns[columnName].sort ? true : false;
       }
 
       case RABGridProperties.ColumnSize: {
-        return this.config && this.config.data && 
-          this.config.data.columns && 
-          columnName && columnName !== '' &&
-          this.config.data.columns[columnName] && 
+        return this.config.data?.columns && columnName && columnName !== '' && this.config.data.columns[columnName] && 
           this.config.data.columns[columnName].size ? this.config.data.columns[columnName].size : 'auto';
       }
 
       case RABGridProperties.ColumnName: {
-        return this.config && this.config.data && 
-          this.config.data.columns && 
-          columnName && columnName !== '' &&
-          this.config.data.columns[columnName] && 
+        return this.config.data?.columns && columnName && columnName !== '' && this.config.data.columns[columnName] && 
           this.config.data.columns[columnName].name ? this.config.data.columns[columnName].name : null;
       }
 
       case RABGridProperties.ColumnInputComponent: {
-        return this.config && this.config.data && 
-          this.config.data.columns && 
-          columnName && columnName !== '' &&
-          this.config.data.columns[columnName] && 
-          this.config.data.columns[columnName].input && 
-          this.config.data.columns[columnName].input?.component ? this.config.data.columns[columnName].input?.component : RABGridEditComponents.TextInput;
+        return this.config.data?.columns && columnName && columnName !== '' && this.config.data.columns[columnName] && 
+          this.config.data.columns[columnName].input && this.config.data.columns[columnName].input?.component ? 
+          this.config.data.columns[columnName].input?.component : RABGridEditComponents.TextInput;
       }
 
       case RABGridProperties.ColumnInputOptions: {
-        return this.config && this.config.data && 
-          this.config.data.columns && 
-          columnName && columnName !== '' &&
-          this.config.data.columns[columnName] && 
-          this.config.data.columns[columnName].input && 
-          this.config.data.columns[columnName].input?.options ? this.config.data.columns[columnName].input?.options : [];
+        return this.config.data?.columns && columnName && columnName !== '' && this.config.data.columns[columnName] && 
+          this.config.data.columns[columnName].input && this.config.data.columns[columnName].input?.options ? 
+          this.config.data.columns[columnName].input?.options : [];
       }
 
       case RABGridProperties.ColumnInputOptionName: {
-        if(this.config && this.config.data && this.config.data.columns && 
-          columnName && columnName !== '' && this.config.data.columns[columnName] && 
+        if(this.config.data?.columns && columnName && columnName !== '' && this.config.data.columns[columnName] && 
           this.config.data.columns[columnName].input && this.config.data.columns[columnName].input?.options){
           
           let options = this.config.data.columns[columnName].input?.options
@@ -270,8 +252,7 @@ export class RabGridComponent implements OnInit {
       }
 
       case RABGridProperties.ColumnInputOptionValue: {
-        if(this.config && this.config.data && this.config.data.columns && 
-          columnName && columnName !== '' && this.config.data.columns[columnName] && 
+        if(this.config.data?.columns && columnName && columnName !== '' && this.config.data.columns[columnName] && 
           this.config.data.columns[columnName].input && this.config.data.columns[columnName].input?.options){
             
           let options = this.config.data.columns[columnName].input?.options
@@ -285,48 +266,48 @@ export class RabGridComponent implements OnInit {
       }
 
       case RABGridProperties.ColumnBold: {
-        return this.config && this.config.data && this.config.data.columns && columnName && columnName !== '' && this.config.data.columns[columnName] && this.config.data.columns[columnName].bold ? true : false;
+        return this.config.data?.columns && columnName && columnName !== '' && this.config.data.columns[columnName] && this.config.data.columns[columnName].bold ? true : false;
       }
 
       case RABGridProperties.ColumnPrefix: {
-        return this.config && this.config.data && this.config.data.columns && columnName && columnName !== '' && this.config.data.columns[columnName] && this.config.data.columns[columnName].prefix ? this.config.data.columns[columnName].prefix : null;
+        return this.config.data?.columns && columnName && columnName !== '' && this.config.data.columns[columnName] && this.config.data.columns[columnName].prefix ? this.config.data.columns[columnName].prefix : null;
       }
 
       case RABGridProperties.ColumnSuffix: {
-        return this.config && this.config.data && this.config.data.columns && columnName && columnName !== '' && this.config.data.columns[columnName] && this.config.data.columns[columnName].suffix ? this.config.data.columns[columnName].suffix : null;
+        return this.config.data?.columns && columnName && columnName !== '' && this.config.data.columns[columnName] && this.config.data.columns[columnName].suffix ? this.config.data.columns[columnName].suffix : null;
       }
 
       case RABGridProperties.ColumnCommaSeparate: {
-        return this.config && this.config.data && this.config.data.columns && columnName && columnName !== '' && this.config.data.columns[columnName] && this.config.data.columns[columnName].commas ? true : false;
+        return this.config.data?.columns && columnName && columnName !== '' && this.config.data.columns[columnName] && this.config.data.columns[columnName].commas ? true : false;
       }
 
       case RABGridProperties.ColumnRound: {
-        return this.config && this.config.data && this.config.data.columns && columnName && columnName !== '' && this.config.data.columns[columnName] && this.config.data.columns[columnName].round ? this.config.data.columns[columnName].round : 0;
+        return this.config.data?.columns && columnName && columnName !== '' && this.config.data.columns[columnName] && this.config.data.columns[columnName].round ? this.config.data.columns[columnName].round : 0;
       }
 
       case RABGridProperties.ColumnAlign: {
-        return this.config && this.config.data && this.config.data.columns && columnName && columnName !== '' && this.config.data.columns[columnName] && this.config.data.columns[columnName].align ? this.config.data.columns[columnName].align : 'left';
+        return this.config.data?.columns && columnName && columnName !== '' && this.config.data.columns[columnName] && this.config.data.columns[columnName].align ? this.config.data.columns[columnName].align : 'left';
       }
 
       case RABGridProperties.ColumnLinkEnable: {
-        return this.config && this.config.data && this.config.data.columns && columnName && columnName !== '' && this.config.data.columns[columnName] && this.config.data.columns[columnName].link && this.config.data.columns[columnName].link?.enable ? true : false;
+        return this.config.data?.columns && columnName && columnName !== '' && this.config.data.columns[columnName] && this.config.data.columns[columnName].link && this.config.data.columns[columnName].link?.enable ? true : false;
       }
 
       case RABGridProperties.ColumnLinkCallback: {
-        return this.config && this.config.data && this.config.data.columns && columnName && columnName !== '' && this.config.data.columns[columnName] && this.config.data.columns[columnName].link && this.config.data.columns[columnName].link?.callback ? this.config.data.columns[columnName].link?.callback : (data: any, _this: any): void => {};
+        return this.config.data?.columns && columnName && columnName !== '' && this.config.data.columns[columnName] && this.config.data.columns[columnName].link && this.config.data.columns[columnName].link?.callback ? this.config.data.columns[columnName].link?.callback : (data: any, _this: any): void => {};
       }
 
       case RABGridProperties.ColumnLinkCallbackOrigin: {
-        return this.config && this.config.data && this.config.data.columns && columnName && columnName !== '' && this.config.data.columns[columnName] && this.config.data.columns[columnName].link && this.config.data.columns[columnName].link?.callbackorigin ? this.config.data.columns[columnName].link?.callbackorigin : null;
+        return this.config.data?.columns && columnName && columnName !== '' && this.config.data.columns[columnName] && this.config.data.columns[columnName].link && this.config.data.columns[columnName].link?.callbackorigin ? this.config.data.columns[columnName].link?.callbackorigin : null;
       }
 
       //Data -> Rows
       case RABGridProperties.RowEdit: {
-        return this.config && this.config.data && this.config.data.rows && this.config.data.rows.edit ? true : false;
+        return this.config.data?.rows?.edit ? true : false;
       }
 
       case RABGridProperties.RowDelete: {
-        return this.config && this.config.data && this.config.data.rows && this.config.data.rows.delete ? true : false;
+        return this.config.data?.rows?.delete ? true : false;
       }
 
       case RABGridProperties.RowAdd: {
@@ -334,12 +315,12 @@ export class RabGridComponent implements OnInit {
       }
 
       case RABGridProperties.LastRowBold: {
-        return this.config && this.config.data && this.config.data.rows && this.config.data.rows.last_row && this.config.data.rows.last_row.bold ? true : false;
+        return this.config.data?.rows?.last_row?.bold ? true : false;
       }
 
       //Footer
       case RABGridProperties.FooterEnable: {
-        return this.config && this.config.footer && this.config.footer.enable ? true : false;
+        return this.config.footer?.enable ? true : false;
       }
 
       default: {

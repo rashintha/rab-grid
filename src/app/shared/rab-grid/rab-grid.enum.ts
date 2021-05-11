@@ -4,8 +4,22 @@ export enum RABGridEditComponents{
     DropDownInput,
 }
 
+export enum RABGridColorThemes{
+    Default,
+    Primary,
+    Secondary,
+    Success,
+    Danger,
+    Warning,
+    Info,
+    Light,
+    Dark
+}
+
 export enum RABGridProperties{
-    Responsive, Stripped,
+    Responsive, 
+    
+    ThemeStriped, ThemeColorTheme, ThemeHoverable,
 
     PaginationEnable, PageSize,
 

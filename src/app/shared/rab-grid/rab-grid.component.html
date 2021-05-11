@@ -70,7 +70,18 @@
 
     <div class="row" *ngIf="data.length || getProperty(rabGridProperties.HeaderOrder)">
         <div class="col" [class.table-responsive]="getProperty(rabGridProperties.Responsive)">
-            <table id="rab-grid" class="table" [class.table-striped]="getProperty(rabGridProperties.Stripped)">
+            <table id="rab-grid" class="table" 
+                [class.table-striped]="getProperty(rabGridProperties.ThemeStriped)"
+                [class.table-primary]="getProperty(rabGridProperties.ThemeColorTheme) == rabGridColorThemes.Primary"
+                [class.table-secondary]="getProperty(rabGridProperties.ThemeColorTheme) == rabGridColorThemes.Secondary"
+                [class.table-success]="getProperty(rabGridProperties.ThemeColorTheme) == rabGridColorThemes.Success"
+                [class.table-danger]="getProperty(rabGridProperties.ThemeColorTheme) == rabGridColorThemes.Danger"
+                [class.table-warning]="getProperty(rabGridProperties.ThemeColorTheme) == rabGridColorThemes.Warning"
+                [class.table-info]="getProperty(rabGridProperties.ThemeColorTheme) == rabGridColorThemes.Info"
+                [class.table-light]="getProperty(rabGridProperties.ThemeColorTheme) == rabGridColorThemes.Light"
+                [class.table-dark]="getProperty(rabGridProperties.ThemeColorTheme) == rabGridColorThemes.Dark"
+                [class.table-hover]="getProperty(rabGridProperties.ThemeHoverable)"
+                >
                 <thead>
                     <tr *ngIf="getProperty(rabGridProperties.HeaderOrder)">
                         <th [style.width]="getProperty(rabGridProperties.ColumnSize, head)" *ngFor="let head of getProperty(rabGridProperties.HeaderOrder)"
