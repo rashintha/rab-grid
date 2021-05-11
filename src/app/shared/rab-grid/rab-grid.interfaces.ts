@@ -1,4 +1,4 @@
-import { RABGridColorThemes, RABGridEditComponents } from "./rab-grid.enum";
+import { RABGridBorderColors, RABGridColorThemes, RABGridEditComponents } from "./rab-grid.enum";
 
 export interface RABGridConfig{
     /** Set true to enable responsiveness. Default: false */
@@ -24,6 +24,16 @@ interface RABGridTheme{
     color_theme?: RABGridColorThemes,
     /** Set true to enable hoverable strips. Default: false */
     hoverable?: boolean
+    /** Border configurations */
+    border?: RABGridThemeBorder
+    /** If required to add custom classes to the table, mention them here. Seperate them by a space. */
+    custom_classes?: string
+}
+
+interface RABGridThemeBorder{
+    /** Set true to enable borders. Default: false */
+    enable: boolean
+    color_theme?: RABGridBorderColors
 }
 
 interface RABGridPagination{

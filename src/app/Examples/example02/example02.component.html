@@ -151,3 +151,87 @@
 
     <rab-grid [data]="grid_data" [config]="grid05_config"></rab-grid>
 </div>
+
+<div class="container content">
+    <div class="row">
+        <div class="col h2">Grid with Borders Example</div>
+    </div>
+    <div class="row">
+        <div class="col h6 pb-4">This example shows how to enable borders in the grid.</div>
+    </div>
+    <div class="row">
+        <div class="col pb-5">
+            <pre><code>{{
+    "grid_config: RABGridConfig = {
+    theme: {
+        border: {
+            enable: true
+        }
+    }
+}"}}</code></pre>
+        </div>
+    </div>
+
+    <rab-grid [data]="grid_data" [config]="grid06_config"></rab-grid>
+</div>
+
+<div class="container content">
+    <div class="row">
+        <div class="col h2">Grid with Border Colors Example</div>
+    </div>
+    <div class="row">
+        <div class="col h6 pb-4">This example shows color themes of the borders of the grid.</div>
+    </div>
+    <div class="row">
+        <div class="col pb-5">
+            <pre><code>{{
+    "grid_config: RABGridConfig = {
+    theme: {
+        border: {
+            enable: true,
+            color_theme: RABGridBorderColors.Default
+        }
+    }
+}"}}</code></pre>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col pb-4 text-center">
+            <button class="btn btn-sm btn-default" (click)="grid7_change_color(0)">Default</button>
+            <button class="btn btn-sm btn-primary ml-1" (click)="grid7_change_color(1)">Primary</button>
+            <button class="btn btn-sm btn-secondary ml-1" (click)="grid7_change_color(2)">Secondary</button>
+            <button class="btn btn-sm btn-success ml-1" (click)="grid7_change_color(3)">Success</button>
+            <button class="btn btn-sm btn-danger ml-1" (click)="grid7_change_color(4)">Danger</button>
+            <button class="btn btn-sm btn-warning ml-1" (click)="grid7_change_color(5)">Warning</button>
+            <button class="btn btn-sm btn-info ml-1" (click)="grid7_change_color(6)">Info</button>
+            <button class="btn btn-sm btn-light ml-1" (click)="grid7_change_color(7)">Light</button>
+            <button class="btn btn-sm btn-dark ml-1" (click)="grid7_change_color(8)">Dark</button>
+            <button class="btn btn-sm btn-light ml-1" (click)="grid7_change_color(9)">White</button>
+            <button class="btn btn-sm btn-light ml-1" (click)="grid7_change_color(10)">Border Less</button>
+        </div>
+    </div>
+
+    <rab-grid [data]="grid_data" [config]="grid07_config"></rab-grid>
+</div>
+
+<div class="container content">
+    <div class="row">
+        <div class="col h2">Grid with Custom CSS Classes Example</div>
+    </div>
+    <div class="row">
+        <div class="col h6 pb-4">This example shows how to add custom css classes to the grid.</div>
+    </div>
+    <div class="row">
+        <div class="col pb-5">
+            <pre><code>{{
+    "grid_config: RABGridConfig = {
+    theme: {
+        custom_classes: 'table-sm align-middle'
+    }
+}"}}</code></pre>
+        </div>
+    </div>
+
+    <rab-grid [data]="grid_data" [config]="grid08_config"></rab-grid>
+</div>

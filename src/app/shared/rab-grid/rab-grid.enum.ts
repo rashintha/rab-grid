@@ -16,10 +16,24 @@ export enum RABGridColorThemes{
     Dark
 }
 
+export enum RABGridBorderColors{
+    Default,
+    Primary,
+    Secondary,
+    Success,
+    Danger,
+    Warning,
+    Info,
+    Light,
+    Dark,
+    White,
+    BorderLess
+}
+
 export enum RABGridProperties{
     Responsive, 
     
-    ThemeStriped, ThemeColorTheme, ThemeHoverable,
+    ThemeStriped, ThemeColorTheme, ThemeHoverable, ThemeBorderEnable, ThemeBorderColorTheme, ThemeCustomClasses,
 
     PaginationEnable, PageSize,
 

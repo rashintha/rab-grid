@@ -3,7 +3,7 @@ import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
 import * as XLSX from 'xlsx';
 import { saveAs } from 'file-saver';
-import { RABGridColorThemes, RABGridEditComponents, RABGridProperties } from './rab-grid.enum';
+import { RABGridBorderColors, RABGridColorThemes, RABGridEditComponents, RABGridProperties } from './rab-grid.enum';
 import { RABGridConfig } from './rab-grid.interfaces'
 
 @Component({
@@ -60,6 +60,7 @@ export class RabGridComponent implements OnInit {
   rabGridProperties = RABGridProperties
   rabGridEditComponents = RABGridEditComponents
   rabGridColorThemes = RABGridColorThemes
+  rabGridBorderColors = RABGridBorderColors
 
   print_data: any = []
 
@@ -101,11 +102,23 @@ export class RabGridComponent implements OnInit {
       }
 
       case RABGridProperties.ThemeColorTheme: {
-        return this.config.theme?.color_theme ? this.config.theme?.color_theme : null;
+        return this.config.theme?.color_theme ? this.config.theme.color_theme : null;
       }
 
       case RABGridProperties.ThemeHoverable: {
         return this.config.theme?.hoverable ? true : false;
+      }
+
+      case RABGridProperties.ThemeBorderEnable: {
+        return this.config.theme?.border?.enable ? true : false;
+      }
+
+      case RABGridProperties.ThemeBorderColorTheme: {
+        return this.config.theme?.border?.color_theme ? this.config.theme.border.color_theme : RABGridBorderColors.Default;
+      }
+
+      case RABGridProperties.ThemeCustomClasses: {
+        return this.config.theme?.custom_classes ? this.config.theme.custom_classes : '';
       }
 
       //Pagination

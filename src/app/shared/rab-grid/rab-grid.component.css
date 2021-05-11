@@ -1,0 +1,107 @@
+table.border-primary > thead > tr > th {
+    border-color: #007bff!important;
+}
+
+table.border-primary > tbody > tr > td {
+    border-color: #007bff!important;
+}
+
+table.border-primary > tfoot > tr > th {
+    border-color: #007bff!important;
+}
+
+table.border-secondary > thead > tr > th {
+    border-color: #6c757d!important;
+}
+
+table.border-secondary > tbody > tr > td {
+    border-color: #6c757d!important;
+}
+
+table.border-secondary > tfoot > tr > th {
+    border-color: #6c757d!important;
+}
+
+table.border-success > thead > tr > th {
+    border-color: #28a745!important;
+}
+
+table.border-success > tbody > tr > td {
+    border-color: #28a745!important;
+}
+
+table.border-success > tfoot > tr > th {
+    border-color: #28a745!important;
+}
+
+table.border-danger > thead > tr > th {
+    border-color: #dc3545!important;
+}
+
+table.border-danger > tbody > tr > td {
+    border-color: #dc3545!important;
+}
+
+table.border-danger > tfoot > tr > th {
+    border-color: #dc3545!important;
+}
+
+table.border-warning > thead > tr > th {
+    border-color: #ffc107!important;
+}
+
+table.border-warning > tbody > tr > td {
+    border-color: #ffc107!important;
+}
+
+table.border-warning > tfoot > tr > th {
+    border-color: #ffc107!important;
+}
+
+table.border-info > thead > tr > th {
+    border-color: #17a2b8!important;
+}
+
+table.border-info > tbody > tr > td {
+    border-color: #17a2b8!important;
+}
+
+table.border-info > tfoot > tr > th {
+    border-color: #17a2b8!important;
+}
+
+table.border-light > thead > tr > th {
+    border-color: #f8f9fa!important;
+}
+
+table.border-light > tbody > tr > td {
+    border-color: #f8f9fa!important;
+}
+
+table.border-light > tfoot > tr > th {
+    border-color: #f8f9fa!important;
+}
+
+table.border-dark > thead > tr > th {
+    border-color: #343a40!important;
+}
+
+table.border-dark > tbody > tr > td {
+    border-color: #343a40!important;
+}
+
+table.border-dark > tfoot > tr > th {
+    border-color: #343a40!important;
+}
+
+table.border-white > thead > tr > th {
+    border-color: #fff!important;
+}
+
+table.border-white > tbody > tr > td {
+    border-color: #fff!important;
+}
+
+table.border-white > tfoot > tr > th {
+    border-color: #fff!important;
+}
