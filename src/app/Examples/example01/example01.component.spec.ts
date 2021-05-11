@@ -1,20 +1,20 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { Rab4GridComponent } from './rab4-grid.component';
+import { Example01Component } from './example01.component';
 
-describe('Rab4GridComponent', () => {
-  let component: Rab4GridComponent;
-  let fixture: ComponentFixture<Rab4GridComponent>;
+describe('Example01Component', () => {
+  let component: Example01Component;
+  let fixture: ComponentFixture<Example01Component>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ Rab4GridComponent ]
+      declarations: [ Example01Component ]
     })
     .compileComponents();
   });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(Rab4GridComponent);
+    fixture = TestBed.createComponent(Example01Component);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
