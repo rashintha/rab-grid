@@ -7,6 +7,7 @@ import { AppComponent } from './app.component';
 import { HomeComponent } from './Components/home/home.component';
 import { Example01Component } from './Examples/example01/example01.component';
 import { RabGridComponent } from './shared/rab-grid/rab-grid.component';
+import { Example02Component } from './Examples/example02/example02.component';
 
 @NgModule({
   declarations: [
@@ -14,6 +15,7 @@ import { RabGridComponent } from './shared/rab-grid/rab-grid.component';
     RabGridComponent,
     HomeComponent,
     Example01Component,
+    Example02Component,
   ],
   imports: [
     BrowserModule,

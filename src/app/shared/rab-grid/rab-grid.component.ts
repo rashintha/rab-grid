@@ -1,5 +1,10 @@
 import { Component, Input, OnInit, Output, EventEmitter } from '@angular/core';
+import html2canvas from 'html2canvas';
+import jsPDF from 'jspdf';
+import * as XLSX from 'xlsx';
+import { saveAs } from 'file-saver';
 import { RABGridEditComponents, RABGridProperties } from './rab-grid.enum';
+import { RABGridConfig } from './rab-grid.interfaces'
 
 @Component({
   selector: 'rab-grid',
@@ -12,7 +17,7 @@ export class RabGridComponent implements OnInit {
   private _data: Array<Object> = []
 
   //Inputs
-  @Input() config: any = null
+  @Input() config: RABGridConfig = {}
 
   @Input() set data(value: Array<Object>){
     if(this._data.length > value.length){
@@ -41,15 +46,21 @@ export class RabGridComponent implements OnInit {
     return this._data;
   }
 
+  @Input() loading: Boolean = false
+
   //Outputs
   @Output() pageChanged = new EventEmitter<number>()
   @Output() cellClick = new EventEmitter<Object>()
   @Output() deleteClick = new EventEmitter<Object>()
   @Output() saveClick = new EventEmitter<Object>()
+  @Output() saveAllClick = new EventEmitter<Array<Object>>()
+  @Output() saveNewClick = new EventEmitter<Object>()
 
   //Variables
   rabGridProperties = RABGridProperties
   rabGridEditComponents = RABGridEditComponents
+
+  print_data: any = []
 
   page: number = 1
   page_numbers: Array<number> = []
@@ -80,16 +91,16 @@ export class RabGridComponent implements OnInit {
   getProperty(property: RABGridProperties, columnName: string = '', index: number = 0): any{
     switch(property){
       case RABGridProperties.Responsive: {
-        return this.config && this.config.responsive ? true : false;
+        return this.config.responsive ? true : false;
       }
 
       case RABGridProperties.Stripped: {
-        return this.config && this.config.stripped ? true : false;
+        return this.config.stripped ? true : false;
       }
 
       //Pagination
       case RABGridProperties.PaginationEnable: {
-        return this.config && this.config.pagination && this.config.pagination.enable ? true : false;
+        return this.config.pagination?.enable ? true : false;
       }
 
       case RABGridProperties.PageSize: {
@@ -144,11 +155,11 @@ export class RabGridComponent implements OnInit {
           this.config.data.export.enable ? true : false;
       }
 
-      case RABGridProperties.ExportType: {
-        if(this.config && this.config.data && this.config.data.export && this.config.data.export.type && this.config.data.export.type.length){
+      case RABGridProperties.ExportTypes: {
+        if(this.config && this.config.data && this.config.data.export && this.config.data.export.types && this.config.data.export.types.length){
           let return_arr: Array<Object> = [];
 
-          this.config.data.export.type.forEach((type: string): void => {
+          this.config.data.export.types.forEach((type: string): void => {
             if(type.toLowerCase() === "pdf"){
               return_arr.push({
                 name: "PDF File",
@@ -231,7 +242,7 @@ export class RabGridComponent implements OnInit {
           columnName && columnName !== '' &&
           this.config.data.columns[columnName] && 
           this.config.data.columns[columnName].input && 
-          this.config.data.columns[columnName].input.component ? this.config.data.columns[columnName].input.component : RABGridEditComponents.TextInput;
+          this.config.data.columns[columnName].input?.component ? this.config.data.columns[columnName].input?.component : RABGridEditComponents.TextInput;
       }
 
       case RABGridProperties.ColumnInputOptions: {
@@ -240,29 +251,37 @@ export class RabGridComponent implements OnInit {
           columnName && columnName !== '' &&
           this.config.data.columns[columnName] && 
           this.config.data.columns[columnName].input && 
-          this.config.data.columns[columnName].input.options ? this.config.data.columns[columnName].input.options : [];
+          this.config.data.columns[columnName].input?.options ? this.config.data.columns[columnName].input?.options : [];
       }
 
       case RABGridProperties.ColumnInputOptionName: {
-        return this.config && this.config.data && 
-          this.config.data.columns && 
-          columnName && columnName !== '' &&
-          this.config.data.columns[columnName] && 
-          this.config.data.columns[columnName].input && 
-          this.config.data.columns[columnName].input.options &&
-          this.config.data.columns[columnName].input.options[index] && 
-          this.config.data.columns[columnName].input.options[index].name ? this.config.data.columns[columnName].input.options[index].name : null;
+        if(this.config && this.config.data && this.config.data.columns && 
+          columnName && columnName !== '' && this.config.data.columns[columnName] && 
+          this.config.data.columns[columnName].input && this.config.data.columns[columnName].input?.options){
+          
+          let options = this.config.data.columns[columnName].input?.options
+            
+          if(options){
+            return options[index].name ? options[index].name : null
+          }
+        }
+
+        return null;
       }
 
       case RABGridProperties.ColumnInputOptionValue: {
-        return this.config && this.config.data && 
-          this.config.data.columns && 
-          columnName && columnName !== '' &&
-          this.config.data.columns[columnName] && 
-          this.config.data.columns[columnName].input && 
-          this.config.data.columns[columnName].input.options &&
-          this.config.data.columns[columnName].input.options[index] && 
-          this.config.data.columns[columnName].input.options[index].value ? this.config.data.columns[columnName].input.options[index].value : this.getProperty(RABGridProperties.ColumnInputOptionName, columnName, index);
+        if(this.config && this.config.data && this.config.data.columns && 
+          columnName && columnName !== '' && this.config.data.columns[columnName] && 
+          this.config.data.columns[columnName].input && this.config.data.columns[columnName].input?.options){
+            
+          let options = this.config.data.columns[columnName].input?.options
+
+          if(options){
+            return options[index].value ? options[index].value : this.getProperty(RABGridProperties.ColumnInputOptionName, columnName, index)
+          }
+        }
+
+        return  this.getProperty(RABGridProperties.ColumnInputOptionName, columnName, index);
       }
 
       case RABGridProperties.ColumnBold: {
@@ -290,15 +309,15 @@ export class RabGridComponent implements OnInit {
       }
 
       case RABGridProperties.ColumnLinkEnable: {
-        return this.config && this.config.data && this.config.data.columns && columnName && columnName !== '' && this.config.data.columns[columnName] && this.config.data.columns[columnName].link && this.config.data.columns[columnName].link.enable ? true : false;
+        return this.config && this.config.data && this.config.data.columns && columnName && columnName !== '' && this.config.data.columns[columnName] && this.config.data.columns[columnName].link && this.config.data.columns[columnName].link?.enable ? true : false;
       }
 
       case RABGridProperties.ColumnLinkCallback: {
-        return this.config && this.config.data && this.config.data.columns && columnName && columnName !== '' && this.config.data.columns[columnName] && this.config.data.columns[columnName].link && this.config.data.columns[columnName].link.callback ? this.config.data.columns[columnName].link.callback : (data: any): void => {};
+        return this.config && this.config.data && this.config.data.columns && columnName && columnName !== '' && this.config.data.columns[columnName] && this.config.data.columns[columnName].link && this.config.data.columns[columnName].link?.callback ? this.config.data.columns[columnName].link?.callback : (data: any, _this: any): void => {};
       }
 
       case RABGridProperties.ColumnLinkCallbackOrigin: {
-        return this.config && this.config.data && this.config.data.columns && columnName && columnName !== '' && this.config.data.columns[columnName] && this.config.data.columns[columnName].link && this.config.data.columns[columnName].link.callbackorigin ? this.config.data.columns[columnName].link.callbackorigin : null;
+        return this.config && this.config.data && this.config.data.columns && columnName && columnName !== '' && this.config.data.columns[columnName] && this.config.data.columns[columnName].link && this.config.data.columns[columnName].link?.callbackorigin ? this.config.data.columns[columnName].link?.callbackorigin : null;
       }
 
       //Data -> Rows
@@ -329,6 +348,97 @@ export class RabGridComponent implements OnInit {
     }
   }
 
+  get_print_data(): void{
+    let i = 0;
+    let row_data = []
+    this.print_data = []
+    while(i < this.data.length){
+      row_data.push(this.sort_by ? this.sort_data[i++] : this.data[i++])
+
+      if(!(i % 36)){
+        this.print_data.push(row_data)
+        row_data = []
+      }
+    }
+
+    this.print_data.push(row_data)
+  }
+
+  export_to(type: any): void{
+    if(type.type){
+      this.download_mode = true
+      this.page_size_change()
+      this.get_print_data()
+      
+      setTimeout(() => {
+        switch(type.type){
+          case "pdf": {
+            let element = document.getElementById('rab-grid-download-container');
+            let DATA: HTMLElement = element ? element : new HTMLElement;
+      
+            html2canvas(DATA).then(canvas => {
+              let fileWidth = 208;
+              let fileHeight = canvas.height * fileWidth / canvas.width;
+              var heightLeft = fileHeight;
+
+              const FILEURI = canvas.toDataURL('image/png')
+              let PDF = new jsPDF('p', 'mm', 'a4');
+              let position = 0;
+              PDF.addImage(FILEURI, 'PNG', 0, position, fileWidth, fileHeight)
+              
+              heightLeft -= PDF.internal.pageSize.getHeight();
+              position = heightLeft - fileHeight;
+              let height_m = 0;
+
+              while (heightLeft >= 0) {
+                PDF.addPage();
+                PDF.addImage(FILEURI, 'PNG', 0, position, fileWidth, fileHeight - height_m);
+                heightLeft -= PDF.internal.pageSize.getHeight();
+                position = heightLeft - fileHeight;
+                height_m = 0;
+              }
+                
+              PDF.save('BuildingList.pdf');
+
+              this.download_mode = false
+              this.page_size_change()
+            }); 
+          } break;
+
+          case 'xlsx': {
+            /* table id is passed over here */   
+            let element = document.getElementById('rab-grid'); 
+            const ws: XLSX.WorkSheet =XLSX.utils.table_to_sheet(element);
+
+            /* generate workbook and add the worksheet */
+            const wb: XLSX.WorkBook = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, 'Sheet1');
+
+            /* save to file */
+            XLSX.writeFile(wb, "BuildingList.xlsx");
+            
+            this.download_mode = false
+            this.page_size_change()
+          } break;
+
+          case 'csv': {
+            const replacer = (key: any, value: any) => value === null ? '' : value; // specify how you want to handle null values here
+            const header = this.getProperty(RABGridProperties.HeaderOrder) ? this.getProperty(RABGridProperties.HeaderOrder) : Object.keys(this.data[0]);
+            let csv = this.data.map((row: any) => header.map((fieldName: any) => JSON.stringify(row[fieldName], replacer)).join(','));
+            csv.unshift(header.join(','));
+            let csvArray = csv.join('\r\n');
+
+            var blob = new Blob([csvArray], {type: 'text/csv' })
+            saveAs(blob, "BuildingList.csv");
+
+            this.download_mode = false
+            this.page_size_change()
+          } break;
+        }
+      }, 100);
+    }
+  }
+
   change_page(page: number = 1): void{
     this.page = page;
     this.editing_row = [];
@@ -342,6 +452,24 @@ export class RabGridComponent implements OnInit {
 
     if(this.pageChanged.observers.length && this.getProperty(RABGridProperties.DataLength) && this.getProperty(RABGridProperties.PageSize) * this.getProperty(RABGridProperties.PageSize)){
       this.pageChanged.emit(this.page)
+    }
+  }
+
+  page_size_change(): void{
+    if(this.getProperty(RABGridProperties.PaginationEnable)){
+      this.page_numbers = [];
+
+      let pages_c = (this.getProperty(RABGridProperties.DataLength) ? this.getProperty(RABGridProperties.DataLength) / this.getProperty(RABGridProperties.PageSize) : this.data.length / this.getProperty(RABGridProperties.PageSize));
+
+      if((this.getProperty(RABGridProperties.DataLength) ? this.getProperty(RABGridProperties.DataLength) % this.getProperty(RABGridProperties.PageSize) : this.data.length % this.getProperty(RABGridProperties.PageSize)) > 0){
+        pages_c += 1;
+      }
+
+      for(let i = 1; i <= pages_c; i++){
+        this.page_numbers.push(i)
+      }
+
+      this.change_page(this.page)
     }
   }
 
@@ -405,6 +533,31 @@ export class RabGridComponent implements OnInit {
     this.non_edited_row = JSON.parse(JSON.stringify(row));
   }
 
+  edit_all(): void{
+    this.cancel_edit()
+    this.editing_rows = this.getProperty(RABGridProperties.PaginationEnable) ? JSON.parse(JSON.stringify(this.page_data)) : JSON.parse(JSON.stringify(this.data));;
+    this.editing_all = true;
+  }
+
+  add_new(): void{
+    let new_row: any = {}
+
+    if(this.getProperty(RABGridProperties.HeaderOrder)){
+      this.getProperty(RABGridProperties.HeaderOrder).forEach((key: any) => {
+        new_row[key] = null
+      })
+    }else{
+      for(let key in this.data[0]){
+        new_row[key] = null
+      }
+    }
+
+    this._data.unshift(new_row)
+    this.change_page(this.page)
+    this.new_row = this.getProperty(RABGridProperties.PaginationEnable) ? this.page_data[0] : this.data[0]
+    this.add_new_row = true
+  }
+
   cancel_edit(): void{
     for(let key in this.editing_row){
       this.editing_row[key] = this.non_edited_row[key];
@@ -440,6 +593,45 @@ export class RabGridComponent implements OnInit {
       this.editing_row = [];
       this.non_edited_row = [];
     }
+  }
+
+  save_all(): void{
+    let edited_rows: Array<any> = [];
+    this.editing_rows.forEach((edited, index) => {
+      if(JSON.stringify(this.getProperty(RABGridProperties.PaginationEnable) ? this.page_data[index] : this.data[index]) !== JSON.stringify(edited)){
+        edited_rows.push(edited)
+      }
+    });
+
+    if(this.saveAllClick.observers.length){
+      this.saveAllClick.emit(edited_rows)
+    }
+
+    this.editing_all = false;
+    this.editing_rows = [];
+  }
+
+  save_new(): void{
+    if(this.saveNewClick.observers.length){
+      this.saveNewClick.emit(this.new_row)
+    }
+
+    this._data.shift()
+    this.change_page(this.page)
+    this.new_row = {}
+    this.add_new_row = false
+  }
+
+  cancel_all(): void{
+    this.editing_all = false;
+    this.editing_rows = [];
+  }
+
+  cancel_new(): void{
+    this._data.shift()
+    this.change_page(this.page)
+    this.new_row = {}
+    this.add_new_row = false
   }
 
   emit_cellClick(row: any, key: string): void{

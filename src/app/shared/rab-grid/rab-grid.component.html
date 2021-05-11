@@ -3,6 +3,71 @@
         <div class="col text-center bg-light p-2">No data is available to display.</div>
     </div>
 
+    <div id="rab-grid-download-container" class="mx-auto" *ngIf="download_mode">
+        <div *ngFor="let p_page of print_data; let j = index" class="A4 pt-5" [class.pt-5]="j != 0">
+            <table class="table">
+                <thead>
+                    <tr *ngIf="getProperty(rabGridProperties.HeaderOrder)">
+                        <th [style.width]="getProperty(rabGridProperties.ColumnSize, head)" *ngFor="let head of getProperty(rabGridProperties.HeaderOrder)"
+                            [class.text-right]="getProperty(rabGridProperties.ColumnAlign, head) == 'right'"
+                            [class.text-left]="getProperty(rabGridProperties.ColumnAlign, head) == 'left'"
+                            [class.text-center]="getProperty(rabGridProperties.ColumnAlign, head) == 'center'">
+                            <span *ngIf="!getProperty(rabGridProperties.ColumnSort, head)">
+                                <span>{{getProperty(rabGridProperties.ColumnName, head) ? getProperty(rabGridProperties.ColumnName, head) : head}}</span>
+                            </span>
+                            <a class="table_sort" *ngIf="getProperty(rabGridProperties.ColumnSort, head)">
+                                <span>{{getProperty(rabGridProperties.ColumnName, head) ? getProperty(rabGridProperties.ColumnName, head) : head}}</span>
+                            </a>
+                            <span *ngIf="sort_by == head"><span *ngIf="sort_direction == 1">&nbsp;<i class="fas fa-caret-down"></i></span><span *ngIf="sort_direction == 2">&nbsp;<i class="fas fa-caret-up"></i></span></span>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let row of p_page; let i = index">
+                        <td *ngFor="let value of getProperty(rabGridProperties.HeaderOrder)"
+                            [class.text-right]="getProperty(rabGridProperties.ColumnAlign, value) == 'right'"
+                            [class.text-left]="getProperty(rabGridProperties.ColumnAlign, value) == 'left'"
+                            [class.text-center]="getProperty(rabGridProperties.ColumnAlign, value) == 'center'">
+                            <span 
+                                [class.bold]="getProperty(rabGridProperties.ColumnBold, value) || (getProperty(rabGridProperties.LastRowBold, value) && i == (getProperty(rabGridProperties.PaginationEnable) ? page_data.length : data.length) - 1)"
+                                [class.archivo-bold]="getProperty(rabGridProperties.ColumnLinkEnable, value)"
+                                [class.grid-links]="getProperty(rabGridProperties.ColumnLinkEnable, value)"
+                                (click)="getProperty(rabGridProperties.ColumnLinkCallback, value)(row, getProperty(rabGridProperties.ColumnLinkCallbackOrigin, value))">
+                                
+                                
+                                {{displayValue(row[value], value)}}
+                            </span>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div *ngIf="getProperty(rabGridProperties.PageEdit) || getProperty(rabGridProperties.RowAdd) || getProperty(rabGridProperties.ExportEnable)" class="row">
+        <div class="col pl-4 pr-4 text-right mobile-hide">
+            <button *ngIf="!add_new_row && !editing_all && getProperty(rabGridProperties.RowAdd)" (click)="add_new()" class="btn btn-sm btn-light"><i class="fas fa-plus"></i> Add New</button>
+            <button *ngIf="!add_new_row && !editing_all && getProperty(rabGridProperties.PageEdit)" (click)="edit_all()" class="btn btn-sm btn-light ml-1"><i class="fas fa-pencil-alt"></i> Edit All</button>
+            
+            <button *ngIf="editing_all" (click)="save_all()" class="btn btn-sm btn-light"><i class="fas fa-save"></i> Save All</button>
+            <button *ngIf="editing_all" (click)="cancel_all()" class="btn btn-sm btn-light ml-1"><i class="fas fa-ban"></i> Cancel</button>
+    
+            <button *ngIf="add_new_row" (click)="save_new()" class="btn btn-sm btn-light"><i class="fas fa-save"></i> Save</button>
+            <button *ngIf="add_new_row" (click)="cancel_new()" class="btn btn-sm btn-light ml-1"><i class="fas fa-ban"></i> Cancel</button>
+    
+            <div *ngIf="getProperty(rabGridProperties.ExportEnable) && !editing_all && !add_new_row" class="btn-group ml-4" role="group">
+                <button id="btnGroupDrop1" type="button" class="btn btn-sm btn-light dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <i class="fas fa-download"></i> Export As
+                </button>
+                <div class="dropdown-menu c-grid-dropdown" aria-labelledby="btnGroupDrop1">
+                    <a (click)="export_to(type)" *ngFor="let type of getProperty(rabGridProperties.ExportTypes)" class="dropdown-item pointer">
+                        <i *ngIf="type.icon" [class]="type.icon"></i> {{type.name}}
+                    </a>
+                </div>
+              </div>
+        </div>
+    </div>
+
     <div class="row" *ngIf="data.length || getProperty(rabGridProperties.HeaderOrder)">
         <div class="col" [class.table-responsive]="getProperty(rabGridProperties.Responsive)">
             <table id="rab-grid" class="table" [class.table-striped]="getProperty(rabGridProperties.Stripped)">
@@ -90,8 +155,81 @@
                         <th *ngFor="let head of getProperty(rabGridProperties.HeaderOrder)">{{head}}</th>
                     </tr>
                 </tfoot>
-                
             </table>
+
+            <div *ngIf="getProperty(rabGridProperties.DataTotalShow) && getProperty(rabGridProperties.PaginationEnable)" class="total">
+                <span>
+                    Showing 
+                    <select [(ngModel)]="custom_page_size" (change)="page_size_change()" class="form-control show-count">
+                        <option value="0">All</option>
+                        <option value="5">5</option>
+                        <option value="10">10</option>
+                        <option value="25">25</option>
+                        <option value="50">50</option>
+                        <option value="100">100</option>
+                    </select> of 
+                    {{getProperty(rabGridProperties.DataLength) ? getProperty(rabGridProperties.DataLength) : data.length}} entries
+                </span>
+            </div>
+
+            <nav *ngIf="getProperty(rabGridProperties.PaginationEnable)" aria-label="Page navigation">
+                <ul class="pagination justify-content-end">
+                    <li class="page-item" [class.disabled]="page == 1 || editing_all">
+                        <a class="page-link" aria-label="Previous" (click)="change_page(1)">
+                            <span aria-hidden="true">&laquo;&laquo;</span>
+                            <span class="sr-only">Previous</span>
+                        </a>
+                    </li>
+        
+                    <li class="page-item" [class.disabled]="page == 1 || editing_all">
+                        <a class="page-link" aria-label="Previous" (click)="change_page(page - 1)">
+                            <span aria-hidden="true">&laquo;</span>
+                            <span class="sr-only">Previous</span>
+                        </a>
+                    </li>
+                    
+                    <li *ngFor="let number of page_numbers;" class="page-item" [class.disabled]="editing_all" [class.hidden]="(number > page + 2) || (number < page - 2)" [class.active]="page == number">
+                        <a class="page-link" (click)="change_page(number)">{{number}}</a>
+                    </li>
+                    
+                    <li class="page-item" [class.disabled]="page == page_numbers.length || editing_all">
+                        <a class="page-link" (click)="change_page(page + 1)" aria-label="Next">
+                            <span aria-hidden="true">&raquo;</span>
+                            <span class="sr-only">Next</span>
+                        </a>
+                    </li>
+        
+                    <li class="page-item" [class.disabled]="page == page_numbers.length || editing_all">
+                        <a class="page-link" (click)="change_page(page_numbers.length)" aria-label="Next">
+                            <span aria-hidden="true">&raquo;&raquo;</span>
+                            <span class="sr-only">Next</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+
+        <div *ngIf="download_mode" class="center-loader">
+            <div class="mx-auto spinner-container">
+                <div class="loading-spinner-eclipse">
+                    <div class="loading">
+                        <div></div>
+                    </div>
+                </div>
+            </div>
+            <div class="mx-auto mt-4">
+                Please wait while downloading...
+            </div>
+        </div>
+        
+        <div *ngIf="loading" class="w-100">
+            <div class="mx-auto" style="width: fit-content;">
+                <div class="loading-spinner-eclipse">
+                    <div class="loading">
+                        <div></div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </div>

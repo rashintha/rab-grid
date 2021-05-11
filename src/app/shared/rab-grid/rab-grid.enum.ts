@@ -15,7 +15,7 @@ export enum RABGridProperties{
 
     DataLength, DataTotalShow,
 
-    ExportEnable, ExportType,
+    ExportEnable, ExportTypes,
 
     RowEdit, RowDelete, RowAdd, LastRowBold,
     
