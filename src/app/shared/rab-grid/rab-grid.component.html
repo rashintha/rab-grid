@@ -2,4 +2,96 @@
     <div class="row" *ngIf="!data.length && !getProperty(rabGridProperties.HeaderOrder)">
         <div class="col text-center bg-light p-2">No data is available to display.</div>
     </div>
+
+    <div class="row" *ngIf="data.length || getProperty(rabGridProperties.HeaderOrder)">
+        <div class="col" [class.table-responsive]="getProperty(rabGridProperties.Responsive)">
+            <table id="rab-grid" class="table" [class.table-striped]="getProperty(rabGridProperties.Stripped)">
+                <thead>
+                    <tr *ngIf="getProperty(rabGridProperties.HeaderOrder)">
+                        <th [style.width]="getProperty(rabGridProperties.ColumnSize, head)" *ngFor="let head of getProperty(rabGridProperties.HeaderOrder)"
+                            [class.text-right]="getProperty(rabGridProperties.ColumnAlign, head) == 'right'"
+                            [class.text-left]="getProperty(rabGridProperties.ColumnAlign, head) == 'left'"
+                            [class.text-center]="getProperty(rabGridProperties.ColumnAlign, head) == 'center'">
+                            <span *ngIf="!getProperty(rabGridProperties.ColumnSort, head)">
+                                <span>{{getProperty(rabGridProperties.ColumnName, head) ? getProperty(rabGridProperties.ColumnName, head) : head}}</span>
+                            </span>
+                            <a class="table_sort" *ngIf="getProperty(rabGridProperties.ColumnSort, head)" (click)="sort(head)">
+                                <span>{{getProperty(rabGridProperties.ColumnName, head) ? getProperty(rabGridProperties.ColumnName, head) : head}}</span>
+                            </a>
+                            <span *ngIf="sort_by == head"><span *ngIf="sort_direction == 1">&nbsp;<i class="fas fa-caret-down"></i></span><span *ngIf="sort_direction == 2">&nbsp;<i class="fas fa-caret-up"></i></span></span>
+                        </th>
+                        <th *ngIf="!download_mode && (getProperty(rabGridProperties.RowEdit) || getProperty(rabGridProperties.RowDelete))"></th>
+                    </tr>
+                </thead>
+                <tbody *ngIf="getProperty(rabGridProperties.HeaderOrder)">
+                    <tr *ngFor="let row of getProperty(rabGridProperties.PaginationEnable) ? page_data : data; let i = index" >
+                        <td *ngFor="let value of getProperty(rabGridProperties.HeaderOrder)" (click)="emit_cellClick(row, value)"
+                            [class.text-right]="getProperty(rabGridProperties.ColumnAlign, value) == 'right'"
+                            [class.text-left]="getProperty(rabGridProperties.ColumnAlign, value) == 'left'"
+                            [class.text-center]="getProperty(rabGridProperties.ColumnAlign, value) == 'center'">
+                            <span 
+                                *ngIf="(!editing_all && editing_row != row && !(add_new_row && i == 0)) || !getProperty(rabGridProperties.ColumnEdit, value)" 
+                                [class.bold]="getProperty(rabGridProperties.ColumnBold, value) || (getProperty(rabGridProperties.LastRowBold, value) && i == (getProperty(rabGridProperties.PaginationEnable) ? page_data.length : data.length) - 1)"
+                                [class.archivo-bold]="getProperty(rabGridProperties.ColumnLinkEnable, value)"
+                                [class.grid-links]="getProperty(rabGridProperties.ColumnLinkEnable, value)"
+                                (click)="getProperty(rabGridProperties.ColumnLinkCallback, value)(row, getProperty(rabGridProperties.ColumnLinkCallbackOrigin, value))">
+                                
+                                
+                                {{displayValue(row, value)}}
+                            </span>
+                            <div *ngIf="(editing_row == row || editing_all || (add_new_row && i == 0)) && getProperty(rabGridProperties.ColumnEdit, value)">
+                                <input class="form-control w-100" [(ngModel)]="objToAny(editing_rows[i])[value]" *ngIf="editing_all && (getProperty(rabGridProperties.ColumnInputComponent, value) == rabGridEditComponents.TextInput)" type="text">
+                                <input class="form-control w-100" [(ngModel)]="objToAny(new_row)[value]" *ngIf="(add_new_row && i == 0) && (getProperty(rabGridProperties.ColumnInputComponent, value) == rabGridEditComponents.TextInput)" type="text">
+                                <input class="form-control w-100" [(ngModel)]="editing_row[value]" *ngIf="!editing_all && !add_new_row && (getProperty(rabGridProperties.ColumnInputComponent, value) == rabGridEditComponents.TextInput)" type="text">
+        
+                                <input class="form-control w-100" [(ngModel)]="objToAny(editing_rows[i])[value]" *ngIf="editing_all && (getProperty(rabGridProperties.ColumnInputComponent, value) == rabGridEditComponents.EmailInput)" type="email">
+                                <input class="form-control w-100" [(ngModel)]="objToAny(new_row)[value]" *ngIf="(add_new_row && i == 0) && (getProperty(rabGridProperties.ColumnInputComponent, value) == rabGridEditComponents.EmailInput)" type="email">
+                                <input class="form-control w-100" [(ngModel)]="editing_row[value]" *ngIf="!editing_all && !add_new_row && (getProperty(rabGridProperties.ColumnInputComponent, value) == rabGridEditComponents.EmailInput)" type="email">
+        
+                                <select class="form-control w-100" [(ngModel)]="objToAny(editing_rows[i])[value]" *ngIf="editing_all && (getProperty(rabGridProperties.ColumnInputComponent, value) == rabGridEditComponents.DropDownInput)">
+                                    <option *ngFor="let option of getProperty(rabGridProperties.ColumnInputOptions, value); let i = index" [value]="getProperty(rabGridProperties.ColumnInputOptionValue, value, i)">{{getProperty(rabGridProperties.ColumnInputOptionName, value, i)}}</option>
+                                </select>
+                                <select class="form-control w-100" [(ngModel)]="objToAny(new_row)[value]" *ngIf="(add_new_row && i == 0) && (getProperty(rabGridProperties.ColumnInputComponent, value) == rabGridEditComponents.DropDownInput)">
+                                    <option *ngFor="let option of getProperty(rabGridProperties.ColumnInputOptions, value); let i = index" [value]="getProperty(rabGridProperties.ColumnInputOptionValue, value, i)">{{getProperty(rabGridProperties.ColumnInputOptionName, value, i)}}</option>
+                                </select>
+                                <select class="form-control w-100" [(ngModel)]="editing_row[value]" *ngIf="!editing_all && !add_new_row && (getProperty(rabGridProperties.ColumnInputComponent, value) == rabGridEditComponents.DropDownInput)">
+                                    <option *ngFor="let option of getProperty(rabGridProperties.ColumnInputOptions, value); let i = index" [value]="getProperty(rabGridProperties.ColumnInputOptionValue, value, i)">{{getProperty(rabGridProperties.ColumnInputOptionName, value, i)}}</option>
+                                </select>
+                            </div>
+                        </td>
+                        <td *ngIf="!download_mode && (getProperty(rabGridProperties.RowEdit) || getProperty(rabGridProperties.RowDelete))" style="min-width: 100px">
+                            <button *ngIf="editing_row != row && getProperty(rabGridProperties.RowEdit) && !(add_new_row && i == 0) && !editing_all && !add_new_row" (click)="edit_row(row)" class="button-border"><i class="fas fa-pencil-alt"></i></button>
+                            <button *ngIf="editing_row != row && getProperty(rabGridProperties.RowDelete) && !(add_new_row && i == 0) && !editing_all && !add_new_row" (click)="delete_row(row)" class="button-border ml-1"><i class="fas fa-trash-alt"></i></button>
+        
+                            <div class="c-dialog" *ngIf="deleting_row == row">
+                                <div class="c-dialog-bubble pt-2 pb-2 pr-4 pl-4" [class.single]="!getProperty(rabGridProperties.RowEdit)">
+                                    <div>Are you sure you want to delete?</div>
+                                    <div class="pt-1 text-right">
+                                        <button (click)="delete_yes()" class="btn btn-sm btn-danger">YES</button>
+                                        <button (click)="delete_no()" class="btn btn-sm btn-default">NO</button>
+                                    </div>
+                                </div>
+                            </div>
+        
+                            <button *ngIf="editing_row == row" (click)="save_row(row)" class="button-border"><i class="fas fa-save"></i></button>
+                            <button *ngIf="editing_row == row" (click)="cancel_edit()" class="button-border ml-1"><i class="fas fa-ban"></i></button>
+                        </td>
+                    </tr>
+                </tbody>
+
+                <tbody>
+                    <tr *ngIf="!data.length" class="text-center">
+                        <td [attr.colspan]="getProperty(rabGridProperties.HeaderOrder) ? getProperty(rabGridProperties.HeaderOrder).length : 0">No records available</td>
+                    </tr>
+                </tbody>
+
+                <tfoot *ngIf="getProperty(rabGridProperties.FooterEnable)">
+                    <tr *ngIf="getProperty(rabGridProperties.HeaderOrder)">
+                        <th *ngFor="let head of getProperty(rabGridProperties.HeaderOrder)">{{head}}</th>
+                    </tr>
+                </tfoot>
+                
+            </table>
+        </div>
+    </div>
 </div>

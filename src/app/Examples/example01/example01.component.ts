@@ -9,6 +9,8 @@ export class Example01Component implements OnInit {
 
   constructor() { }
 
+  grid_data = [{name: 'Edward Mitchel', age: 28, type: 'Admin', status: 'Active'}]
+
   ngOnInit(): void {
   }
 
