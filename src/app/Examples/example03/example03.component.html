@@ -29,17 +29,18 @@
 
 <div class="container content">
     <div class="row">
-        <div class="col h2">Grid with Pagination Example</div>
+        <div class="col h2">Grid with Default Page Size</div>
     </div>
     <div class="row">
-        <div class="col h6 pb-4">This example shows grid with basic pagination.</div>
+        <div class="col h6 pb-4">This example shows grid default page size.</div>
     </div>
     <div class="row">
         <div class="col pb-5">
             <pre><code>{{
-"grid01_config: RABGridConfig = {
+"grid02_config: RABGridConfig = {
     pagination: {
-        enable: true
+        enable: true,
+        selected_size: 5
     }
 }"}}</code></pre>
         </div>

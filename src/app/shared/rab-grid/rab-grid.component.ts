@@ -15,6 +15,7 @@ export class RabGridComponent implements OnInit {
 
   //Private
   private _data: Array<Object> = []
+  private _custom_page_size: number = -1
 
   //Inputs
   @Input() config: RABGridConfig = {}
@@ -37,9 +38,9 @@ export class RabGridComponent implements OnInit {
     if(this.getProperty(RABGridProperties.PaginationEnable)){
       this.page_numbers = [];
 
-      let pages_c = (this.getProperty(RABGridProperties.DataLength) ? this.getProperty(RABGridProperties.DataLength) / this.getProperty(RABGridProperties.PageSize) : value.length / this.getProperty(RABGridProperties.PageSize));
+      let pages_c = (this.getProperty(RABGridProperties.DataLength) ? this.getProperty(RABGridProperties.DataLength) / this.getProperty(RABGridProperties.SelectedPageSize) : value.length / this.getProperty(RABGridProperties.SelectedPageSize));
 
-      if((this.getProperty(RABGridProperties.DataLength) ? this.getProperty(RABGridProperties.DataLength) % this.getProperty(RABGridProperties.PageSize) : value.length % this.getProperty(RABGridProperties.PageSize)) > 0){
+      if((this.getProperty(RABGridProperties.DataLength) ? this.getProperty(RABGridProperties.DataLength) % this.getProperty(RABGridProperties.SelectedPageSize) : value.length % this.getProperty(RABGridProperties.SelectedPageSize)) > 0){
         pages_c += 1;
       }
 
@@ -76,7 +77,22 @@ export class RabGridComponent implements OnInit {
   page: number = 1
   page_numbers: Array<number> = []
   page_data: Array<Object> = []
-  custom_page_size: number = 10
+  
+  set custom_page_size(value: number){
+    this._custom_page_size = value
+  }
+
+  get custom_page_size(): number {
+    if(this._custom_page_size == -1){
+      if(this.config.pagination?.selected_size){
+        return this.config.pagination.selected_size
+      }else{
+        return 10
+      }
+    }else{
+      return this._custom_page_size
+    }
+  }
   
   download_mode: boolean = false
   
@@ -97,6 +113,11 @@ export class RabGridComponent implements OnInit {
   constructor() { }
 
   ngOnInit(): void{
+    
+  }
+
+  ngAfterViewInit(): void{
+    
   }
 
   getProperty(property: RABGridProperties, columnName: string = '', index: number = 0): any{
@@ -139,17 +160,43 @@ export class RabGridComponent implements OnInit {
         return this.config.pagination?.theme?.color_theme ? this.config.pagination.theme.color_theme : RABGridPaginationColorThemes.Default;
       }
 
-      case RABGridProperties.PageSize: {
-        return this.download_mode ? this.data.length : this.config.pagination?.page_size && this.config.pagination.page_size > 0 ? 
-            this.custom_page_size == this.config.pagination.page_size ? 
-              this.config.pagination.page_size : this.custom_page_size == 0 ? 
-                this.getProperty(RABGridProperties.DataLength) ? 
-                  this.getProperty(RABGridProperties.DataLength) : this.data.length : 
-              this.custom_page_size : 
-          this.custom_page_size == 0 ? 
-            this.getProperty(RABGridProperties.DataLength) ? 
-              this.getProperty(RABGridProperties.DataLength) : this.data.length : 
-            this.custom_page_size;
+      case RABGridProperties.PageSizes: {
+        return this.config.pagination?.page_sizes?.length ? this.config.pagination.page_sizes : [5, 10, 20, 50, 100, 500];
+      }
+
+      case RABGridProperties.SelectedPageSize: {
+
+        if(this.download_mode){
+          return this.data.length
+        }else{
+          if(this.custom_page_size){
+            return this.custom_page_size
+          }else{
+            return this.data.length
+          }
+        }
+
+        // return this.download_mode ? 
+        //         this.data.length : 
+                
+        //         this.config.pagination?.selected_size && this.config.pagination.selected_size > 0 ? 
+                  
+        //           this.custom_page_size == this.config.pagination.selected_size ? 
+        //             this.config.pagination.selected_size : 
+                    
+        //             this.custom_page_size == 0 ? 
+                      
+        //               this.getProperty(RABGridProperties.DataLength) ? 
+        //                 this.getProperty(RABGridProperties.DataLength) : 
+        //                 this.data.length : 
+        //             this.custom_page_size : 
+                  
+        //           this.custom_page_size == 0 ? 
+                    
+        //             this.getProperty(RABGridProperties.DataLength) ? 
+        //               this.getProperty(RABGridProperties.DataLength) : 
+        //               this.data.length : 
+        //         this.custom_page_size;
       }
 
       //Page
@@ -451,13 +498,12 @@ export class RabGridComponent implements OnInit {
     this.editing_row = [];
 
     this.page_data = [];
-    
       
-    for(let i = this.getProperty(RABGridProperties.PageSize) * this.page - this.getProperty(RABGridProperties.PageSize); i < (this.data.length > this.getProperty(RABGridProperties.PageSize) ? this.data.length > this.getProperty(RABGridProperties.PageSize) * this.page ? this.getProperty(RABGridProperties.PageSize) * this.page : this.data.length : this.data.length); i++){
+    for(let i = this.getProperty(RABGridProperties.SelectedPageSize) * this.page - this.getProperty(RABGridProperties.SelectedPageSize); i < (this.data.length > this.getProperty(RABGridProperties.SelectedPageSize) ? this.data.length > this.getProperty(RABGridProperties.SelectedPageSize) * this.page ? this.getProperty(RABGridProperties.SelectedPageSize) * this.page : this.data.length : this.data.length); i++){
       this.page_data.push(this.sort_by ? this.sort_data[i] : this.data[i])
     }
 
-    if(this.pageChanged.observers.length && this.getProperty(RABGridProperties.DataLength) && this.getProperty(RABGridProperties.PageSize) * this.getProperty(RABGridProperties.PageSize)){
+    if(this.pageChanged.observers.length && this.getProperty(RABGridProperties.DataLength) && this.getProperty(RABGridProperties.SelectedPageSize) * this.getProperty(RABGridProperties.SelectedPageSize)){
       this.pageChanged.emit(this.page)
     }
   }
@@ -466,9 +512,9 @@ export class RabGridComponent implements OnInit {
     if(this.getProperty(RABGridProperties.PaginationEnable)){
       this.page_numbers = [];
 
-      let pages_c = (this.getProperty(RABGridProperties.DataLength) ? this.getProperty(RABGridProperties.DataLength) / this.getProperty(RABGridProperties.PageSize) : this.data.length / this.getProperty(RABGridProperties.PageSize));
+      let pages_c = (this.getProperty(RABGridProperties.DataLength) ? this.getProperty(RABGridProperties.DataLength) / this.getProperty(RABGridProperties.SelectedPageSize) : this.data.length / this.getProperty(RABGridProperties.SelectedPageSize));
 
-      if((this.getProperty(RABGridProperties.DataLength) ? this.getProperty(RABGridProperties.DataLength) % this.getProperty(RABGridProperties.PageSize) : this.data.length % this.getProperty(RABGridProperties.PageSize)) > 0){
+      if((this.getProperty(RABGridProperties.DataLength) ? this.getProperty(RABGridProperties.DataLength) % this.getProperty(RABGridProperties.SelectedPageSize) : this.data.length % this.getProperty(RABGridProperties.SelectedPageSize)) > 0){
         pages_c += 1;
       }
 

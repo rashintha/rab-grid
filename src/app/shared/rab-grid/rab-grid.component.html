@@ -66,8 +66,15 @@
         </div>
     </div>
 
-    <div *ngIf="getProperty(rabGridProperties.PageEdit) || getProperty(rabGridProperties.RowAdd) || getProperty(rabGridProperties.ExportEnable)" class="row">
-        <div class="col pl-4 pr-4 text-right mobile-hide">
+    <div class="row pb-2">
+        <div class="col pl-4 text-left" *ngIf="getProperty(rabGridProperties.PaginationEnable)">
+            Page size 
+            <select [(ngModel)]="custom_page_size" (change)="page_size_change()" class="form-control form-control-sm show-count">
+                <option value="0">All</option>
+                <option *ngFor="let size of getProperty(rabGridProperties.PageSizes)" [disabled]="data.length < size" [value]="size">{{size}}</option>
+            </select>
+        </div>
+        <div class="col pr-4 text-right mobile-hide" *ngIf="getProperty(rabGridProperties.PageEdit) || getProperty(rabGridProperties.RowAdd) || getProperty(rabGridProperties.ExportEnable)">
             <button *ngIf="!add_new_row && !editing_all && getProperty(rabGridProperties.RowAdd)" (click)="add_new()" class="btn btn-sm btn-light"><i class="fas fa-plus"></i> Add New</button>
             <button *ngIf="!add_new_row && !editing_all && getProperty(rabGridProperties.PageEdit)" (click)="edit_all()" class="btn btn-sm btn-light ml-1"><i class="fas fa-pencil-alt"></i> Edit All</button>
             
@@ -204,15 +211,7 @@
 
             <div *ngIf="getProperty(rabGridProperties.DataTotalShow) && getProperty(rabGridProperties.PaginationEnable)" class="total">
                 <span>
-                    Showing 
-                    <select [(ngModel)]="custom_page_size" (change)="page_size_change()" class="form-control show-count">
-                        <option value="0">All</option>
-                        <option *ngIf="data.length > 5" value="5">5</option>
-                        <option *ngIf="data.length > 10" value="10">10</option>
-                        <option *ngIf="data.length > 25" value="25">25</option>
-                        <option *ngIf="data.length > 50" value="50">50</option>
-                        <option *ngIf="data.length > 100" value="100">100</option>
-                    </select> of 
+                    Total 
                     {{getProperty(rabGridProperties.DataLength) ? getProperty(rabGridProperties.DataLength) : data.length}} entries
                 </span>
             </div>

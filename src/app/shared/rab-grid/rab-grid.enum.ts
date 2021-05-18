@@ -48,7 +48,7 @@ export enum RABGridProperties{
     
     ThemeStriped, ThemeColorTheme, ThemeHoverable, ThemeBorderEnable, ThemeBorderColorTheme, ThemeCustomClasses,
 
-    PaginationEnable, PageSize, PaginationThemeColorTheme,
+    PaginationEnable, PageSizes, SelectedPageSize, PaginationThemeColorTheme,
 
     PageEdit,
     

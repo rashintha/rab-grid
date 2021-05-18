@@ -39,8 +39,10 @@ interface RABGridThemeBorder{
 interface RABGridPagination{
     /** Set true to enable pagination. Default: false */
     enable?: boolean
-    /** Set page size. Default: 10 */
-    page_size?: number
+    /** Set the page sizes list. Default: [5, 10, 20, 50, 100] */
+    page_sizes?: Array<number>
+    /** Set the defaultly selected page size. Set 0 to show all. Default: 10 */
+    selected_size?: number
     /** Pagination Theme Configurations */
     theme?: RABGridPaginationTheme
 }
