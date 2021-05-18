@@ -6,12 +6,44 @@
             </a>
         </div>
     </div>
+    
     <div class="row">
-        <div class="col h2 text-center">Simple Dataset Example</div>
+        <div class="col h2">Grid with Pagination Example</div>
     </div>
     <div class="row">
-        <div class="col h6 text-center pb-5">This example shows how to add dataset without any configurations.</div>
+        <div class="col h6 pb-4">This example shows grid with basic pagination.</div>
+    </div>
+    <div class="row">
+        <div class="col pb-5">
+            <pre><code>{{
+"grid_config: RABGridConfig = {
+    pagination: {
+        enable: true
+    }
+}"}}</code></pre>
+        </div>
     </div>
 
     <rab-grid [config]="grid01_config" [data]="grid_data"></rab-grid>
+</div>
+
+<div class="container content">
+    <div class="row">
+        <div class="col h2">Grid with Pagination Example</div>
+    </div>
+    <div class="row">
+        <div class="col h6 pb-4">This example shows grid with basic pagination.</div>
+    </div>
+    <div class="row">
+        <div class="col pb-5">
+            <pre><code>{{
+"grid01_config: RABGridConfig = {
+    pagination: {
+        enable: true
+    }
+}"}}</code></pre>
+        </div>
+    </div>
+
+    <rab-grid [config]="grid02_config" [data]="grid_data"></rab-grid>
 </div>
