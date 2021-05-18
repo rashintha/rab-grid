@@ -34,6 +34,14 @@ export class Example03Component implements OnInit {
     }
   }
 
+  grid03_config: RABGridConfig = {
+    pagination: {
+      enable: true,
+      page_sizes: [2, 4, 6, 8],
+      selected_size: 4
+    }
+  }
+
   constructor() { }
 
   ngOnInit(): void {
