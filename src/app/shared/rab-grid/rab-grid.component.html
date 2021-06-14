@@ -141,7 +141,7 @@
                     </tr>
                 </thead>
                 <tbody *ngIf="getProperty(rabGridProperties.HeaderOrder)">
-                    <tr *ngFor="let row of getProperty(rabGridProperties.PaginationEnable) ? page_data : data; let i = index" >
+                    <tr *ngFor="let row of page_data; let i = index" >
                         <td *ngFor="let value of getProperty(rabGridProperties.HeaderOrder)" (click)="emit_cellClick(row, value)"
                             [class.text-right]="getProperty(rabGridProperties.ColumnAlign, value) == 'right'"
                             [class.text-left]="getProperty(rabGridProperties.ColumnAlign, value) == 'left'"

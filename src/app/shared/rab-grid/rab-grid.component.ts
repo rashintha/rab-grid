@@ -47,9 +47,9 @@ export class RabGridComponent implements OnInit {
       for(let i = 1; i <= pages_c; i++){
         this.page_numbers.push(i)
       }
-
-      this.change_page(this.page)
     }
+
+    this.change_page(this.page)
   }
   get data(): Array<Object>{
     return this._data;

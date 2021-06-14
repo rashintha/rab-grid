@@ -33,6 +33,7 @@ interface RABGridTheme{
 interface RABGridThemeBorder{
     /** Set true to enable borders. Default: false */
     enable: boolean
+    /** Set if want to add a border color. */
     color_theme?: RABGridBorderColors
 }
 
