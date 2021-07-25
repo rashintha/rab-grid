@@ -21,11 +21,11 @@ export class RabGridComponent implements OnInit {
   @Input() config: RABGridConfig = {}
 
   @Input() set data(value: Array<Object>){
-    if(this._data.length > value.length){
+    if(!value || this._data.length > value.length){
       this.page = 1
     }
     
-    this._data = value
+    this._data = value?.length ? value : []
 
     if(this._data.length < 10){
       if(this._data.length < 5){
